@@ -1,4 +1,5 @@
-require("GSL")
+# require("GSL")
+using("GSL")
 
 # WARNING: Base.Uint8 is deprecated, use UInt8 instead.
 # WARNING: Base.String is deprecated, use AbstractString instead.
