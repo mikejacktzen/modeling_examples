@@ -1,5 +1,5 @@
 # require("GSL")
-using("GSL")
+using(GSL)
 
 # WARNING: Base.Uint8 is deprecated, use UInt8 instead.
 # WARNING: Base.String is deprecated, use AbstractString instead.
@@ -116,13 +116,15 @@ function data_as_vector(inptr::Ptr{apop_data})
 end
     
 #Just the matrix. No names.
+# WARNING: int(x) is deprecated, use Int(x) instead.
+
 function data_as_array(inptr::Ptr{apop_data})
     in = unsafe_load(inptr)
     if in.matrix == C_NULL
         return ()
     end
     m = unsafe_load(in.matrix)
-    transpose(pointer_to_array(m.data, (int(m.size2), int(m.size1))))
+    transpose(pointer_to_array(m.data, (Int(m.size2), Int(m.size1))))
 end
 
 function apop_estimate(data::Ptr{apop_data}, mstring::AbstractString)
