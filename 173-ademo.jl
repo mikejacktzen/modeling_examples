@@ -6,7 +6,6 @@ q = query_to_data("select out, input from dta")
 data = data_as_array(q)
 db_close()
 
-
 oest = apop_estimate(q, "apop_ols")
 out1 = data_as_vector(oest.parameters)
 
