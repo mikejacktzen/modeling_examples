@@ -1,11 +1,14 @@
 require("GSL")
 
+# WARNING: Base.Uint8 is deprecated, use UInt8 instead.
+# WARNING: Base.String is deprecated, use AbstractString instead.
+
 type apop_name
-    title::Ptr{Uint8}
-    vector::Ptr{Uint8}
-    col::Ptr{Ptr{Uint8}}
-    row::Ptr{Ptr{Uint8}}
-    text::Ptr{Ptr{Uint8}}
+    title::Ptr{UInt8}
+    vector::Ptr{UInt8}
+    col::Ptr{Ptr{UInt8}}
+    row::Ptr{Ptr{UInt8}}
+    text::Ptr{Ptr{UInt8}}
     colct::Int32
     rowct::Int32
     textct::Int32
@@ -15,12 +18,12 @@ type apop_data
     vector::Ptr{gsl_vector}  
     matrix::Ptr{gsl_matrix}
     names::Ptr{apop_name}
-    text::Ptr{Ptr{Ptr{Uint8}}}
+    text::Ptr{Ptr{Ptr{UInt8}}}
     textsize1::Int32
     textsize2::Int32
     weights::Ptr{gsl_vector}
     more::Ptr{apop_data}
-    error::Uint8
+    error::UInt8
 end
 
 bitstype 101*8 backbeat
@@ -53,10 +56,12 @@ type apop_model
     settings::Ptr{Void}
     more::Ptr{Void}
     more_size::Int32
-    error::Uint8
+    error::UInt8
 end
 
-function db_open(dbname::String)
+# WARNING: Base.String is deprecated, use AbstractString instead.
+
+function db_open(dbname::AbstractString)
   val = ccall( (:apop_db_open, "libapophenia"),
               Int32, (Ptr{Uint8},), bytestring(dbname))
   if val == 1
@@ -67,18 +72,18 @@ end
 
 function db_close()
   val = ccall( (:apop_db_close_base, "libapophenia"),
-              Int32, (Uint8,), 'q')
+              Int32, (UInt8,), 'q')
   if val != 0
     error("db_close failed to close database")
   end
   val
 end
 
-function text_to_db(filename::String, tabname::String)
+function text_to_db(filename::AbstractString, tabname::AbstractString)
     out = ccall( (:apop_text_to_db_base, "libapophenia"),
         Cint,
-        (Ptr{Uint8},Ptr{Uint8}, Int32, Int32, Ptr{Ptr{Uint8}},
-        Ptr{Uint8},Ptr{apop_data}, Ptr{Uint8}, Ptr{Uint8}),
+        (Ptr{UInt8},Ptr{UInt8}, Int32, Int32, Ptr{Ptr{UInt8}},
+        Ptr{UInt8},Ptr{apop_data}, Ptr{UInt8}, Ptr{UInt8}),
         bytestring(filename), 
         bytestring(tabname), 
         'n', 'y', C_NULL, C_NULL, C_NULL, C_NULL, bytestring("|\t ")
@@ -89,9 +94,9 @@ function text_to_db(filename::String, tabname::String)
   out
 end
 
-function query_to_data(query::String)
+function query_to_data(query::AbstractString)
     out = ccall( (:apop_query_to_data, "libapophenia"),
-              Ptr{apop_data}, (Ptr{Uint8},), bytestring(query)) 
+              Ptr{apop_data}, (Ptr{UInt8},), bytestring(query)) 
     data = unsafe_load(out)
     if data.error != 0
         error("query_to_data: trouble with query:", query)
@@ -119,7 +124,7 @@ function data_as_array(inptr::Ptr{apop_data})
     transpose(pointer_to_array(m.data, (int(m.size2), int(m.size1))))
 end
 
-function apop_estimate(data::Ptr{apop_data}, mstring::String)
+function apop_estimate(data::Ptr{apop_data}, mstring::AbstractString)
     mptr = @eval cglobal( ($(mstring), "libapophenia"), Ptr{apop_model})
     out = ccall((:apop_estimate, "libapophenia"),
             Ptr{apop_model},
