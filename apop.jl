@@ -63,7 +63,7 @@ end
 
 function db_open(dbname::AbstractString)
   val = ccall( (:apop_db_open, "libapophenia"),
-              Int32, (Ptr{Uint8},), bytestring(dbname))
+              Int32, (Ptr{UInt8},), bytestring(dbname))
   if val == 1
     error("db_open: failed to open", dbname)
   end
