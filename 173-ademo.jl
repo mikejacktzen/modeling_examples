@@ -1,4 +1,5 @@
-require("apop.jl")
+# require("apop.jl")
+include("apop.jl")
 
 db_open("test.db")
 text_to_db("173-data.txt", "dta")
